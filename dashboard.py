@@ -96,8 +96,83 @@ management_data = {
                 'Pós-Colheita': {'Colheita': ['Fevereiro', 'Março'], 'Transporte e armazenamento': ['Março', 'Abril']}
             }
         }
+    },
+    'Milho Safra': {
+        'Mato Grosso': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Setembro', 'Outubro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Agosto', 'Setembro'], 'Herbicida Pós Emergente': ['Outubro', 'Novembro'], 'Controle de pragas/doenças': ['Outubro', 'Novembro', 'Dezembro']},
+                'Pós-Colheita': {'Colheita': ['Janeiro', 'Fevereiro'], 'Transporte e armazenamento': ['Fevereiro', 'Março']}
+            }
+        },
+        'Paraná': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Junho', 'Julho'], 'Preparo de solo': ['Julho', 'Agosto']},
+                'Sementes': {'Tratamento de sementes': ['Agosto'], 'Plantio': ['Agosto', 'Setembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Julho', 'Agosto'], 'Herbicida Pós Emergente': ['Setembro', 'Outubro'], 'Controle de pragas/doenças': ['Outubro', 'Novembro', 'Dezembro']},
+                'Pós-Colheita': {'Colheita': ['Janeiro', 'Fevereiro', 'Março'], 'Transporte e armazenamento': ['Fevereiro', 'Março', 'Abril']}
+            }
+        },
+        'Goiás': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Outubro', 'Novembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Setembro'], 'Herbicida Pós Emergente': ['Novembro', 'Dezembro'], 'Controle de pragas/doenças': ['Novembro', 'Dezembro', 'Janeiro']},
+                'Pós-Colheita': {'Colheita': ['Fevereiro', 'Março'], 'Transporte e armazenamento': ['Março', 'Abril']}
+            }
+        },
+        'Mato Grosso do Sul': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Setembro', 'Outubro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Agosto', 'Setembro'], 'Herbicida Pós Emergente': ['Outubro', 'Novembro'], 'Controle de pragas/doenças': ['Novembro', 'Dezembro', 'Janeiro']},
+                'Pós-Colheita': {'Colheita': ['Janeiro', 'Fevereiro', 'Março'], 'Transporte e armazenamento': ['Fevereiro', 'Março']}
+            }
+        },
+        'Minas Gerais': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Outubro', 'Novembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Setembro'], 'Herbicida Pós Emergente': ['Novembro', 'Dezembro'], 'Controle de pragas/doenças': ['Dezembro', 'Janeiro', 'Fevereiro']},
+                'Pós-Colheita': {'Colheita': ['Fevereiro', 'Março', 'Abril'], 'Transporte e armazenamento': ['Março', 'Abril']}
+            }
+        }
+    },
+    'Algodão': {
+        'Mato Grosso': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Outubro', 'Novembro'], 'Preparo de solo': ['Novembro', 'Dezembro']},
+                'Sementes': {'Tratamento de sementes': ['Dezembro'], 'Plantio': ['Dezembro', 'Janeiro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Novembro', 'Dezembro'], 'Herbicida Pós Emergente': ['Janeiro', 'Fevereiro'], 'Controle de pragas/doenças': ['Janeiro', 'Fevereiro', 'Março', 'Abril']},
+                'Pós-Colheita': {'Colheita': ['Junho', 'Julho', 'Agosto'], 'Transporte e armazenamento': ['Julho', 'Agosto']}
+            }
+        },
+        'Bahia': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Outubro', 'Novembro'], 'Preparo de solo': ['Novembro']},
+                'Sementes': {'Tratamento de sementes': ['Novembro'], 'Plantio': ['Novembro', 'Dezembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Outubro', 'Novembro'], 'Herbicida Pós Emergente': ['Dezembro', 'Janeiro'], 'Controle de pragas/doenças': ['Janeiro', 'Fevereiro', 'Março', 'Abril']},
+                'Pós-Colheita': {'Colheita': ['Julho', 'Agosto'], 'Transporte e armazenamento': ['Agosto', 'Setembro']}
+            }
+        },
+        'Goiás': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Outubro', 'Novembro'], 'Preparo de solo': ['Novembro', 'Dezembro']},
+                'Sementes': {'Tratamento de sementes': ['Dezembro'], 'Plantio': ['Dezembro', 'Janeiro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Novembro', 'Dezembro'], 'Herbicida Pós Emergente': ['Janeiro', 'Fevereiro'], 'Controle de pragas/doenças': ['Fevereiro', 'Março', 'Abril']},
+                'Pós-Colheita': {'Colheita': ['Julho', 'Agosto'], 'Transporte e armazenamento': ['Agosto', 'Setembro']}
+            }
+        },
+        'Mato Grosso do Sul': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Setembro', 'Outubro'], 'Preparo de solo': ['Outubro', 'Novembro']},
+                'Sementes': {'Tratamento de sementes': ['Novembro'], 'Plantio': ['Novembro', 'Dezembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Outubro', 'Novembro'], 'Herbicida Pós Emergente': ['Dezembro', 'Janeiro'], 'Controle de pragas/doenças': ['Janeiro', 'Fevereiro', 'Março']},
+                'Pós-Colheita': {'Colheita': ['Maio', 'Junho', 'Julho'], 'Transporte e armazenamento': ['Junho', 'Julho']}
+            }
+        }
     }
-    # Adicionar Milho e Algodão com a mesma estrutura detalhada
 }
 
 # --- 4. Funções de Geração do Dashboard ---
