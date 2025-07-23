@@ -142,9 +142,9 @@ def create_map(relevant_states, selected_states=None):
         if selected_states and state_name in selected_states:
             return {'fillColor': '#FFFF00', 'color': 'black', 'weight': 2.5, 'fillOpacity': 1.0}
         elif state_name in relevant_states:
-            return {'fillColor': '#2E8B57', 'color': 'black', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#2E8B57', 'color': 'white', 'weight': 1, 'fillOpacity': 1.0}
         else:
-            return {'fillColor': '#555555', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#555555', 'color': 'black', 'weight': 1, 'fillOpacity': 1.0}
 
     # Adiciona os polígonos dos estados com o estilo definido
     folium.GeoJson(
