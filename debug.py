@@ -21,4 +21,3 @@ try:
 
 except Exception as e:
     st.error(f"Ocorreu um erro ao tentar carregar ou exibir os dados: {e}")
-streamlit run debug.py
