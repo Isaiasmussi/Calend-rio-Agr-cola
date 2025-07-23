@@ -8,11 +8,10 @@ from streamlit_folium import st_folium
 # --- 1. Configuração da Página ---
 st.set_page_config(
     page_title="Calendário Agrícola Estratégico",
-    page_icon="🌱", # Mantive um emoji neutro aqui, pode ser removido ou trocado
     layout="wide"
 )
 
-# --- 2. DADOS DO MAPA (EMBUTIDOS DIRETAMENTE NO CÓDIGO) ---
+# --- 2. DADOS COMPLETOS DO MAPA (EMBUTIDOS DIRETAMENTE NO CÓDIGO) ---
 GEOJSON_DATA = """
 {
 "type": "FeatureCollection",
@@ -53,7 +52,7 @@ GEOJSON_DATA = """
 gdf_states = gpd.GeoDataFrame.from_features(json.loads(GEOJSON_DATA)["features"])
 gdf_states.crs = "EPSG:4326"
 
-# NOVA Estrutura de dados com categorias SAMAS
+# Estrutura de dados com categorias SAMAS
 management_data = {
     'Soja': {
         'states': ['Mato Grosso', 'Paraná', 'Rio Grande do Sul', 'Goiás', 'Mato Grosso do Sul'],
@@ -124,11 +123,9 @@ management_data = {
 
 
 # --- 4. Funções de Geração do Dashboard ---
-@st.cache_data
 def create_map(relevant_states, selected_state=None):
     """Cria um mapa Folium destacando os estados relevantes e um estado selecionado."""
     
-    # Se um estado foi selecionado, foca nele. Senão, foca no Brasil.
     if selected_state:
         state_geom = gdf_states[gdf_states['name'] == selected_state].geometry.iloc[0]
         location = [state_geom.centroid.y, state_geom.centroid.x]
@@ -143,11 +140,11 @@ def create_map(relevant_states, selected_state=None):
     def style_function(feature):
         state_name = feature['properties']['name']
         if selected_state and state_name == selected_state:
-            return {'fillColor': '#FFFF00', 'color': '#FFFFFF', 'weight': 2, 'fillOpacity': 0.9} # Destaque Amarelo
+            return {'fillColor': '#FFFF00', 'color': '#FFFFFF', 'weight': 2.5, 'fillOpacity': 0.9}
         elif state_name in relevant_states:
-            return {'fillColor': '#2E8B57', 'color': '#FFFFFF', 'weight': 1, 'fillOpacity': 0.7} # Verde
+            return {'fillColor': '#2E8B57', 'color': '#FFFFFF', 'weight': 1, 'fillOpacity': 0.7}
         else:
-            return {'fillColor': '#333333', 'color': '#666666', 'weight': 1, 'fillOpacity': 0.3} # Cinza
+            return {'fillColor': '#333333', 'color': '#666666', 'weight': 1, 'fillOpacity': 0.3}
 
     folium.GeoJson(
         data=json.loads(GEOJSON_DATA),
@@ -160,13 +157,12 @@ def create_map(relevant_states, selected_state=None):
 def create_styled_timeline(timeline_data, months):
     """Cria e estiliza um DataFrame do cronograma com categorias SAMAS."""
     
-    # Transforma o dicionário aninhado em uma lista de tuplas para o MultiIndex
     records = []
     for samas_cat, sub_cats in timeline_data.items():
         for sub_cat, active_months in sub_cats.items():
             row = {'SAMAS': samas_cat, 'Atividade': sub_cat}
             for month in months:
-                row[month] = '✅' if month in active_months else ''
+                row[month] = 'X' if month in active_months else ''
             records.append(row)
     
     if not records:
@@ -175,10 +171,25 @@ def create_styled_timeline(timeline_data, months):
     df = pd.DataFrame(records).set_index(['SAMAS', 'Atividade'])
     
     def style_active(val):
-        color = '#2E8B57' if val == '✅' else 'transparent'
-        return f'background-color: {color}'
+        color = '#27332D' 
+        font_color = '#FFFFFF'
+        is_active = val == 'X'
         
-    styled_df = df.style.applymap(style_active)
+        return f'background-color: {color if is_active else "transparent"}; color: {font_color if is_active else "transparent"}; text-align: center; border: 1px solid #444;'
+        
+    header_props = [
+        ('background-color', '#121212'),
+        ('color', 'white'),
+        ('font-weight', 'bold')
+    ]
+    
+    styles = [
+        dict(selector="th", props=header_props),
+        dict(selector="th.row_heading", props=header_props),
+        dict(selector="th.col_heading", props=header_props),
+    ]
+
+    styled_df = df.style.apply(lambda s: s.map(style_active)).set_table_styles(styles)
     return styled_df
 
 
@@ -187,39 +198,35 @@ st.title("Calendário Agrícola Estratégico")
 
 months_of_interest = ['Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', 'Janeiro']
 
-# Abas sem emojis
 tab_labels = ["Soja", "Milho Safra", "Algodão"]
-tab_soja, tab_milho, tab_algodao = st.tabs(tab_labels)
+tabs = st.tabs(tab_labels)
 
-for tab, culture_name in zip([tab_soja, tab_milho, tab_algodao], tab_labels):
+for tab, culture_name in zip(tabs, tab_labels):
     with tab:
         culture_data = management_data[culture_name]
         
-        # Correção do Título
         st.header(f"Análise da Cultura: {culture_name}")
 
-        # Filtro de Estado
         all_states = ['Visão Geral'] + sorted(culture_data['states'])
         selected_state = st.selectbox(
-            f'Destaque um estado no mapa:',
+            'Destaque um estado no mapa:',
             options=all_states,
-            key=f'select_{culture_name}' # Chave única para cada selectbox
+            key=f'select_{culture_name}'
         )
         
-        # Lógica para o filtro
         state_to_highlight = selected_state if selected_state != 'Visão Geral' else None
         
-        map_col, timeline_col = st.columns([1, 2])
-
-        with map_col:
-            st.subheader("Mapa de Estados Produtores")
-            folium_map = create_map(culture_data['states'], selected_state=state_to_highlight)
-            st_folium(folium_map, use_container_width=True, height=450)
+        # Layout principal
+        st.subheader("Planejamento de Atividades")
+        
+        timeline_col, map_col = st.columns([2, 1.2])
 
         with timeline_col:
-            st.subheader("Cronograma de Atividades (SAMAS)")
             styled_timeline = create_styled_timeline(culture_data['timeline'], months_of_interest)
             st.dataframe(styled_timeline, use_container_width=True)
+            with st.expander("Ver Detalhes e Pontos de Atenção"):
+                st.markdown(culture_data['details'])
 
-        with st.expander("Ver Detalhes e Pontos de Atenção"):
-            st.markdown(culture_data['details'])
+        with map_col:
+            folium_map = create_map(culture_data['states'], selected_state=state_to_highlight)
+            st_folium(folium_map, use_container_width=True, height=450)
