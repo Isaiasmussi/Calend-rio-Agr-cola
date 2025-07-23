@@ -12,7 +12,6 @@ st.set_page_config(
 )
 
 # --- 2. Dados Estruturados (Extraídos do Documento) ---
-# O período de análise considerado é de Agosto/25 a Janeiro/26
 management_data = {
     'Soja': {
         'states': ['Mato Grosso', 'Paraná', 'Rio Grande do Sul', 'Goiás', 'Mato Grosso do Sul'],
@@ -25,8 +24,8 @@ management_data = {
             'Controle de Doenças': ['Dezembro', 'Janeiro']
         },
         'details': """
-        - [cite_start]**Pragas em Foco:** Lagarta da Soja, Lagarta do Cartucho, Elasmo e Falsa Medideira[cite: 12]. [cite_start]Atenção também para a Mosca Branca[cite: 11].
-        - [cite_start]**Doenças Principais:** Mofo Branco, Antracnose e Ferrugem Asiática, que exigem monitoramento constante pois os danos são severos[cite: 13].
+        - **Pragas em Foco:** Lagarta da Soja, Lagarta do Cartucho, Elasmo e Falsa Medideira. Atenção também para a Mosca Branca.
+        - **Doenças Principais:** Mofo Branco, Antracnose e Ferrugem Asiática, que exigem monitoramento constante pois os danos são severos.
         """
     },
     'Milho Safra': {
@@ -39,9 +38,9 @@ management_data = {
             'Controle de Pragas': ['Outubro', 'Novembro', 'Dezembro', 'Janeiro']
         },
         'details': """
-        - **Pragas em Foco:** Corós, lagarta rosca, lagarta elasmo, larva alfinete (iniciais). [cite_start]Na fase de desenvolvimento, atenção especial à **Cigarrinha**, além da lagarta do cartucho e percevejo barriga verde[cite: 18].
-        - [cite_start]**Doenças:** Ocorrência geralmente mais tardia, com exceção de nematóides[cite: 19].
-        - [cite_start]**Particularidade:** A adubação nitrogenada em cobertura é uma etapa chave que se estende por um período mais longo[cite: 17].
+        - **Pragas em Foco:** Corós, lagarta rosca, lagarta elasmo, larva alfinete (iniciais). Na fase de desenvolvimento, atenção especial à **Cigarrinha**, além da lagarta do cartucho e percevejo barriga verde.
+        - **Doenças:** Ocorrência geralmente mais tardia, com exceção de nematóides.
+        - **Particularidade:** A adubação nitrogenada em cobertura é uma etapa chave que se estende por um período mais longo.
         """
     },
     'Algodão': {
@@ -54,18 +53,17 @@ management_data = {
             'Controle de Doenças': ['Janeiro']
         },
         'details': """
-        - [cite_start]**Pragas em Foco (Atenção Máxima):** A cultura exige controle intenso desde o início, com foco em Bicudo, ácaros, pulgões, curuquerê, lagarta rosada, lagarta das maçãs, Helicoverpa e percevejos[cite: 26].
-        - [cite_start]**Estratégia de Plantio:** É comum em regiões do MT e BA o plantio do algodão em sucessão a uma soja super precoce[cite: 22, 23].
-        - [cite_start]**Comportamento:** O ciclo é semelhante ao milho, porém mais tardio[cite: 21, 25].
+        - **Pragas em Foco (Atenção Máxima):** A cultura exige controle intenso desde o início, com foco em Bicudo, ácaros, pulgões, curuquerê, lagarta rosada, lagarta das maçãs, Helicoverpa e percevejos.
+        - **Estratégia de Plantio:** É comum em regiões do MT e BA o plantio do algodão em sucessão a uma soja super precoce.
+        - **Comportamento:** O ciclo é semelhante ao milho, porém mais tardio.
         """
     }
 }
 
-# --- 3. Carregamento dos Dados Geográficos (com correção) ---
+# --- 3. Carregamento dos Dados Geográficos ---
 @st.cache_data
 def load_geodata():
     url = "https://raw.githubusercontent.com/fititnt/gis-dataset-brasil/master/uf/geojson/uf.json"
-    # Adicionado 'encoding' para ler acentos do arquivo do mapa corretamente
     return gpd.read_file(url, encoding='latin-1')
 
 gdf_states = load_geodata()
@@ -75,7 +73,10 @@ gdf_states = load_geodata()
 def create_choropleth_map(relevant_states):
     """Cria um mapa Folium destacando os estados relevantes."""
     m = folium.Map(location=[-15.788497, -47.879873], zoom_start=4, tiles='CartoDB dark_matter')
-    gdf_filtered = gdf_states[gdf_states['NOME'].isin(relevant_states)]
+    
+    # CORREÇÃO APLICADA AQUI: Trocado 'NOME' por 'name'
+    gdf_filtered = gdf_states[gdf_states['name'].isin(relevant_states)]
+    
     folium.GeoJson(
         gdf_filtered,
         style_function=lambda feature: {
@@ -84,7 +85,7 @@ def create_choropleth_map(relevant_states):
             'weight': 1,
             'fillOpacity': 0.7,
         },
-        tooltip=folium.GeoJsonTooltip(fields=['NOME'], aliases=['Estado:'])
+        tooltip=folium.GeoJsonTooltip(fields=['name'], aliases=['Estado:'])
     ).add_to(m)
     return m
 
@@ -101,8 +102,8 @@ def create_timeline_df(timeline_data, months):
 # --- 5. Interface Principal com Abas ---
 st.title("🗺️ Calendário Agrícola Estratégico")
 st.markdown("""
-[cite_start]Análise das atividades de campo para as principais culturas de verão, focada no período de **Agosto/25 a Janeiro/26**[cite: 6].
-[cite_start]O objetivo é alinhar a comunicação e campanhas publicitárias do Portal Agrolink com os acontecimentos do campo[cite: 3, 4].
+Análise das atividades de campo para as principais culturas de verão, focada no período de **Agosto/25 a Janeiro/26**.
+O objetivo é alinhar a comunicação e campanhas publicitárias do Portal Agrolink com os acontecimentos do campo.
 """)
 
 months_of_interest = ['Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', 'Janeiro']
