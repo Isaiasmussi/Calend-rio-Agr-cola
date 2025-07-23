@@ -12,7 +12,6 @@ st.set_page_config(
 )
 
 # --- 2. DADOS COMPLETOS DO MAPA (EMBUTIDOS DIRETAMENTE NO CÓDIGO) ---
-# Esta variável contém o mapa completo do Brasil. É grande, mas é a garantia de que vai funcionar.
 GEOJSON_DATA = """
 {
 "type": "FeatureCollection",
@@ -136,21 +135,21 @@ def create_map(relevant_states, selected_states=None):
         location = [-15.788497, -47.879873]
         zoom_start = 4
 
-    # Cria o mapa sem o tile layer padrão e sem a marca d'água
-    m = folium.Map(location=location, zoom_start=zoom_start, tiles=None, attributionControl=False)
+    # Cria o mapa com um tile layer sutil e remove a marca d'água
+    m = folium.Map(location=location, zoom_start=zoom_start, tiles="CartoDB positron", attributionControl=False)
 
     def style_function(feature):
         state_name = feature['properties']['name']
         # Lógica de estilo:
-        # 1. Se o estado está na lista de selecionados, pinta de amarelo.
+        # 1. Se o estado está na lista de selecionados, pinta de amarelo com borda preta grossa.
         # 2. Senão, se é um estado relevante para a cultura, pinta de verde.
         # 3. Senão, pinta de cinza escuro.
         if selected_states and state_name in selected_states:
-            return {'fillColor': '#FFFF00', 'color': 'black', 'weight': 2, 'fillOpacity': 1.0}
+            return {'fillColor': '#FFFF00', 'color': 'black', 'weight': 2.5, 'fillOpacity': 1.0}
         elif state_name in relevant_states:
             return {'fillColor': '#2E8B57', 'color': 'white', 'weight': 1, 'fillOpacity': 1.0}
         else:
-            return {'fillColor': '#333333', 'color': '#666666', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#555555', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
 
     # Adiciona os polígonos dos estados com o estilo definido
     folium.GeoJson(
@@ -194,7 +193,17 @@ def create_styled_timeline(timeline_data, months):
         dict(selector="th", props=header_props),
         dict(selector="th.row_heading", props=header_props),
         dict(selector="th.col_heading", props=header_props),
+        dict(selector="td", props=[('border', '1px solid #444')]),
     ]
+
+    # Remove o fundo branco da tabela
+    st.markdown("""
+    <style>
+        .stDataFrame {
+            background-color: transparent;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
     styled_df = df.style.apply(lambda s: s.map(style_active)).set_table_styles(styles)
     return styled_df
