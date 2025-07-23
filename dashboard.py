@@ -142,7 +142,7 @@ def create_map(relevant_states, selected_states=None):
         if selected_states and state_name in selected_states:
             return {'fillColor': '#0cc95e', 'color': 'black', 'weight': 2.5, 'fillOpacity': 1.0}
         elif state_name in relevant_states:
-            return {'fillColor': '#0a381e', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#0a381e', 'color': '#696868', 'weight': 1, 'fillOpacity': 1.0}
         else:
             return {'fillColor': 'black', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
 
