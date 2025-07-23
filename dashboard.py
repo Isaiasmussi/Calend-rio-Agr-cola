@@ -11,10 +11,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- 2. Extração e Estrutura dos Dados do Documento ---
-# Dados extraídos e estruturados a partir do arquivo ANÁLISE DAS PRINCIPAIS CULTURAS DE VERÃO.docx
-# [cite_start]O período de análise considerado é de Agosto/25 a Janeiro/26 [cite: 6]
-# Dados extraídos e estruturados a partir do arquivo ANÁLISE DAS PRINCIPAIS CULTURAS DE VERÃO.docx
+# --- 2. Dados Estruturados (Extraídos do Documento) ---
 # O período de análise considerado é de Agosto/25 a Janeiro/26
 management_data = {
     'Soja': {
@@ -28,8 +25,8 @@ management_data = {
             'Controle de Doenças': ['Dezembro', 'Janeiro']
         },
         'details': """
-        - **Pragas em Foco:** Lagarta da Soja, Lagarta do Cartucho, Elasmo e Falsa Medideira. Atenção também para a Mosca Branca.
-        - **Doenças Principais:** Mofo Branco, Antracnose e Ferrugem Asiática, que exigem monitoramento constante pois os danos são severos.
+        - [cite_start]**Pragas em Foco:** Lagarta da Soja, Lagarta do Cartucho, Elasmo e Falsa Medideira[cite: 12]. [cite_start]Atenção também para a Mosca Branca[cite: 11].
+        - [cite_start]**Doenças Principais:** Mofo Branco, Antracnose e Ferrugem Asiática, que exigem monitoramento constante pois os danos são severos[cite: 13].
         """
     },
     'Milho Safra': {
@@ -42,9 +39,9 @@ management_data = {
             'Controle de Pragas': ['Outubro', 'Novembro', 'Dezembro', 'Janeiro']
         },
         'details': """
-        - **Pragas em Foco:** Corós, lagarta rosca, lagarta elasmo, larva alfinete (iniciais). Na fase de desenvolvimento, atenção especial à **Cigarrinha**, além da lagarta do cartucho e percevejo barriga verde.
-        - **Doenças:** Ocorrência geralmente mais tardia, com exceção de nematóides.
-        - **Particularidade:** A adubação nitrogenada em cobertura é uma etapa chave que se estende por um período mais longo.
+        - **Pragas em Foco:** Corós, lagarta rosca, lagarta elasmo, larva alfinete (iniciais). [cite_start]Na fase de desenvolvimento, atenção especial à **Cigarrinha**, além da lagarta do cartucho e percevejo barriga verde[cite: 18].
+        - [cite_start]**Doenças:** Ocorrência geralmente mais tardia, com exceção de nematóides[cite: 19].
+        - [cite_start]**Particularidade:** A adubação nitrogenada em cobertura é uma etapa chave que se estende por um período mais longo[cite: 17].
         """
     },
     'Algodão': {
@@ -57,19 +54,19 @@ management_data = {
             'Controle de Doenças': ['Janeiro']
         },
         'details': """
-        - **Pragas em Foco (Atenção Máxima):** A cultura exige controle intenso desde o início, com foco em Bicudo, ácaros, pulgões, curuquerê, lagarta rosada, lagarta das maçãs, Helicoverpa e percevejos.
-        - **Estratégia de Plantio:** É comum em regiões do MT e BA o plantio do algodão em sucessão a uma soja super precoce.
-        - **Comportamento:** O ciclo é semelhante ao milho, porém mais tardio.
+        - [cite_start]**Pragas em Foco (Atenção Máxima):** A cultura exige controle intenso desde o início, com foco em Bicudo, ácaros, pulgões, curuquerê, lagarta rosada, lagarta das maçãs, Helicoverpa e percevejos[cite: 26].
+        - [cite_start]**Estratégia de Plantio:** É comum em regiões do MT e BA o plantio do algodão em sucessão a uma soja super precoce[cite: 22, 23].
+        - [cite_start]**Comportamento:** O ciclo é semelhante ao milho, porém mais tardio[cite: 21, 25].
         """
     }
 }
 
-# --- 3. Carregamento dos Dados Geográficos ---
+# --- 3. Carregamento dos Dados Geográficos (com correção) ---
 @st.cache_data
 def load_geodata():
-    # URL para um arquivo GeoJSON de alta qualidade dos estados do Brasil
     url = "https://raw.githubusercontent.com/fititnt/gis-dataset-brasil/master/uf/geojson/uf.json"
-    return gpd.read_file(url)
+    # Adicionado 'encoding' para ler acentos do arquivo do mapa corretamente
+    return gpd.read_file(url, encoding='latin-1')
 
 gdf_states = load_geodata()
 
@@ -78,22 +75,17 @@ gdf_states = load_geodata()
 def create_choropleth_map(relevant_states):
     """Cria um mapa Folium destacando os estados relevantes."""
     m = folium.Map(location=[-15.788497, -47.879873], zoom_start=4, tiles='CartoDB dark_matter')
-
-    # Filtrar o GeoDataFrame para incluir apenas os estados relevantes
     gdf_filtered = gdf_states[gdf_states['NOME'].isin(relevant_states)]
-
-    # Adicionar os estados relevantes com destaque
     folium.GeoJson(
         gdf_filtered,
         style_function=lambda feature: {
-            'fillColor': '#2E8B57', # Cor primária do tema
+            'fillColor': '#2E8B57',
             'color': '#FFFFFF',
             'weight': 1,
             'fillOpacity': 0.7,
         },
         tooltip=folium.GeoJsonTooltip(fields=['NOME'], aliases=['Estado:'])
     ).add_to(m)
-
     return m
 
 def create_timeline_df(timeline_data, months):
@@ -110,70 +102,28 @@ def create_timeline_df(timeline_data, months):
 st.title("🗺️ Calendário Agrícola Estratégico")
 st.markdown("""
 [cite_start]Análise das atividades de campo para as principais culturas de verão, focada no período de **Agosto/25 a Janeiro/26**[cite: 6].
-[cite_start]O objetivo é alinhar a comunicação e campanhas publicitárias do Portal Agrolink com os acontecimentos do campo[cite: 3, 4, 5].
+[cite_start]O objetivo é alinhar a comunicação e campanhas publicitárias do Portal Agrolink com os acontecimentos do campo[cite: 3, 4].
 """)
 
-# Meses para o nosso cronograma
 months_of_interest = ['Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', 'Janeiro']
-
-# Criação do menu superior com abas
 tab_soja, tab_milho, tab_algodao = st.tabs(["🌱 Soja", "🌽 Milho Safra", "⚪ Algodão"])
 
-# --- Aba de Soja ---
-with tab_soja:
-    culture_data = management_data['Soja']
-    st.header("Soja: Mapa e Cronograma de Atividades")
+# Processamento para cada aba
+for tab, culture_name in zip([tab_soja, tab_milho, tab_algodao], ['Soja', 'Milho Safra', 'Algodão']):
+    with tab:
+        culture_data = management_data[culture_name]
+        st.header(f"{tab.label}: Mapa e Cronograma de Atividades")
 
-    map_col, timeline_col = st.columns([1, 2])
+        map_col, timeline_col = st.columns([1, 2])
 
-    with map_col:
-        st.subheader("Principais Estados Produtores")
-        folium_map = create_choropleth_map(culture_data['states'])
-        st_folium(folium_map, use_container_width=True, height=400)
+        with map_col:
+            st.subheader("Principais Estados Produtores")
+            folium_map = create_choropleth_map(culture_data['states'])
+            st_folium(folium_map, use_container_width=True, height=400)
 
-    with timeline_col:
-        st.subheader("Cronograma de Atividades no Campo")
-        timeline_df = create_timeline_df(culture_data['timeline'], months_of_interest)
-        st.dataframe(timeline_df, use_container_width=True)
-        with st.expander("Ver Detalhes e Pontos de Atenção"):
-            st.markdown(culture_data['details'])
-
-
-# --- Aba de Milho Safra ---
-with tab_milho:
-    culture_data = management_data['Milho Safra']
-    st.header("Milho Safra: Mapa e Cronograma de Atividades")
-
-    map_col, timeline_col = st.columns([1, 2])
-
-    with map_col:
-        st.subheader("Principais Estados Produtores")
-        folium_map = create_choropleth_map(culture_data['states'])
-        st_folium(folium_map, use_container_width=True, height=400)
-
-    with timeline_col:
-        st.subheader("Cronograma de Atividades no Campo")
-        timeline_df = create_timeline_df(culture_data['timeline'], months_of_interest)
-        st.dataframe(timeline_df, use_container_width=True)
-        with st.expander("Ver Detalhes e Pontos de Atenção"):
-            st.markdown(culture_data['details'])
-
-
-# --- Aba de Algodão ---
-with tab_algodao:
-    culture_data = management_data['Algodão']
-    st.header("Algodão: Mapa e Cronograma de Atividades")
-
-    map_col, timeline_col = st.columns([1, 2])
-
-    with map_col:
-        st.subheader("Principais Estados Produtores")
-        folium_map = create_choropleth_map(culture_data['states'])
-        st_folium(folium_map, use_container_width=True, height=400)
-
-    with timeline_col:
-        st.subheader("Cronograma de Atividades no Campo")
-        timeline_df = create_timeline_df(culture_data['timeline'], months_of_interest)
-        st.dataframe(timeline_df, use_container_width=True)
-        with st.expander("Ver Detalhes e Pontos de Atenção"):
-            st.markdown(culture_data['details'])
+        with timeline_col:
+            st.subheader("Cronograma de Atividades no Campo")
+            timeline_df = create_timeline_df(culture_data['timeline'], months_of_interest)
+            st.dataframe(timeline_df, use_container_width=True)
+            with st.expander("Ver Detalhes e Pontos de Atenção"):
+                st.markdown(culture_data['details'])
