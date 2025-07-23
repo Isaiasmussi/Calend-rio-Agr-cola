@@ -4,6 +4,7 @@ import geopandas as gpd
 import folium
 import json
 from streamlit_folium import st_folium
+from collections import defaultdict
 
 # --- 1. Configuração da Página ---
 st.set_page_config(
@@ -52,101 +53,71 @@ GEOJSON_DATA = """
 gdf_states = gpd.GeoDataFrame.from_features(json.loads(GEOJSON_DATA)["features"])
 gdf_states.crs = "EPSG:4326"
 
-# Estrutura de dados com categorias SAMAS
+# NOVA ESTRUTURA DE DADOS - AGORA ESPECÍFICA POR ESTADO
 management_data = {
     'Soja': {
-        'states': ['Mato Grosso', 'Paraná', 'Rio Grande do Sul', 'Goiás', 'Mato Grosso do Sul'],
-        'timeline': {
-            'Adubos': {
-                'Preparo do solo e Adubação': ['Agosto', 'Setembro', 'Outubro']
-            },
-            'Sementes': {
-                'Aquisição e Tratamento de Sementes': ['Agosto', 'Setembro', 'Outubro']
-            },
-            'Agroquímicos': {
-                'Herbicidas (Dessecantes e Pré-plantio)': ['Agosto', 'Setembro', 'Outubro'],
-                'Controle de Ervas Daninhas (Pós-emergência)': ['Outubro', 'Novembro', 'Dezembro'],
-                'Controle de Pragas Iniciais': ['Outubro', 'Novembro', 'Dezembro'],
-                'Controle de Doenças': ['Dezembro', 'Janeiro']
+        'Mato Grosso': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Setembro', 'Outubro', 'Novembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Agosto', 'Setembro'], 'Herbicida Pós Emergente': ['Outubro', 'Novembro'], 'Controle de pragas/doenças': ['Novembro', 'Dezembro', 'Janeiro']},
+                'Pós-Colheita': {'Colheita': ['Janeiro', 'Fevereiro', 'Março'], 'Transporte e armazenamento': ['Fevereiro', 'Março', 'Abril']}
             }
         },
-        'details': """
-        - **Pragas em Foco:** Lagarta da Soja, Lagarta do Cartucho, Elasmo e Falsa Medideira. Atenção também para a Mosca Branca.
-        - **Doenças Principais:** Mofo Branco, Antracnose e Ferrugem Asiática.
-        """
-    },
-    'Milho Safra': {
-        'states': ['Mato Grosso', 'Paraná', 'Goiás', 'Mato Grosso do Sul', 'Minas Gerais'],
-        'timeline': {
-            'Adubos': {
-                'Adubação de Cobertura (Nitrogenada)': ['Novembro', 'Dezembro', 'Janeiro']
-            },
-            'Sementes': {
-                'Plantio e Tratamento de Sementes': ['Outubro', 'Novembro']
-            },
-            'Agroquímicos': {
-                'Preparo de Solo e Herbicidas': ['Setembro', 'Outubro', 'Novembro'],
-                'Controle de Pragas': ['Outubro', 'Novembro', 'Dezembro', 'Janeiro']
-            },
-            'Serviços': {
-                'Aquisição de Financiamento/Custeio': ['Agosto', 'Setembro']
+        'Paraná': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Setembro', 'Outubro', 'Novembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Agosto', 'Setembro'], 'Herbicida Pós Emergente': ['Outubro', 'Novembro', 'Dezembro'], 'Controle de pragas/doenças': ['Novembro', 'Dezembro', 'Janeiro']},
+                'Pós-Colheita': {'Colheita': ['Janeiro', 'Fevereiro', 'Março'], 'Transporte e armazenamento': ['Fevereiro', 'Março', 'Abril']}
             }
         },
-        'details': """
-        - **Pragas em Foco:** Corós, lagarta rosca, elasmo (iniciais). Na fase de desenvolvimento, atenção especial à **Cigarrinha**, lagarta do cartucho e percevejo barriga verde.
-        - **Doenças:** Ocorrência geralmente mais tardia, com exceção de nematóides.
-        """
-    },
-    'Algodão': {
-        'states': ['Mato Grosso', 'Bahia', 'Goiás', 'Mato Grosso do Sul'],
-        'timeline': {
-            'Adubos': {
-                'Adubação de Plantio e Cobertura': ['Dezembro', 'Janeiro']
-            },
-            'Sementes': {
-                'Plantio e Tratamento de Sementes': ['Dezembro', 'Janeiro']
-            },
-            'Agroquímicos': {
-                'Controle de Pragas': ['Dezembro', 'Janeiro'],
-                'Controle de Doenças': ['Janeiro']
-            },
-            'Serviços': {
-                'Financiamento e Preparo do Solo': ['Outubro', 'Novembro', 'Dezembro']
+        'Rio Grande do Sul': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Agosto', 'Setembro'], 'Preparo de solo': ['Setembro', 'Outubro']},
+                'Sementes': {'Tratamento de sementes': ['Outubro'], 'Plantio': ['Outubro', 'Novembro', 'Dezembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Setembro', 'Outubro'], 'Herbicida Pós Emergente': ['Novembro', 'Dezembro'], 'Controle de pragas/doenças': ['Dezembro', 'Janeiro', 'Fevereiro']},
+                'Pós-Colheita': {'Colheita': ['Março', 'Abril', 'Maio'], 'Transporte e armazenamento': ['Abril', 'Maio', 'Junho']}
             }
         },
-        'details': """
-        - **Pragas em Foco (Atenção Máxima):** Bicudo, ácaros, pulgões, curuquerê, lagarta rosada, Helicoverpa e percevejos.
-        - **Estratégia de Plantio:** Comum em sucessão a uma soja super precoce (MT e BA).
-        """
+        'Goiás': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Outubro', 'Novembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Setembro'], 'Herbicida Pós Emergente': ['Novembro', 'Dezembro'], 'Controle de pragas/doenças': ['Novembro', 'Dezembro', 'Janeiro']},
+                'Pós-Colheita': {'Colheita': ['Janeiro', 'Fevereiro', 'Março'], 'Transporte e armazenamento': ['Fevereiro', 'Março', 'Abril']}
+            }
+        },
+        'Mato Grosso do Sul': {
+            'timeline': {
+                'Serviços': {'Aquisição de custeio/financiamento': ['Julho', 'Agosto'], 'Preparo de solo': ['Agosto', 'Setembro']},
+                'Sementes': {'Tratamento de sementes': ['Setembro'], 'Plantio': ['Setembro', 'Outubro', 'Novembro']},
+                'Agroquímicos': {'Herbicida dessecante': ['Agosto', 'Setembro'], 'Herbicida Pós Emergente': ['Outubro', 'Novembro'], 'Controle de pragas/doenças': ['Novembro', 'Dezembro', 'Janeiro']},
+                'Pós-Colheita': {'Colheita': ['Fevereiro', 'Março'], 'Transporte e armazenamento': ['Março', 'Abril']}
+            }
+        }
     }
+    # Adicionar Milho e Algodão com a mesma estrutura detalhada
 }
-
 
 # --- 4. Funções de Geração do Dashboard ---
 def create_map(relevant_states, selected_states=None):
     """Cria um mapa Folium destacando os estados relevantes e uma lista de estados selecionados."""
     
-    # O mapa sempre terá a mesma visão geral do Brasil
     location = [-15.788497, -47.879873]
     zoom_start = 4
 
-    # Cria o mapa com o tile layer escuro e remove a marca d'água
     m = folium.Map(location=location, zoom_start=zoom_start, tiles="CartoDB dark_matter", attributionControl=False)
 
     def style_function(feature):
         state_name = feature['properties']['name']
-        # Lógica de estilo:
-        # 1. Se o estado está na lista de selecionados, pinta de amarelo com borda preta grossa.
-        # 2. Senão, se é um estado relevante para a cultura, pinta de verde.
-        # 3. Senão, pinta de cinza escuro.
         if selected_states and state_name in selected_states:
-            return {'fillColor': '#0cc95e', 'color': 'black', 'weight': 2.5, 'fillOpacity': 1.0}
+            return {'fillColor': '#FFFF00', 'color': 'black', 'weight': 2.5, 'fillOpacity': 1.0}
         elif state_name in relevant_states:
-            return {'fillColor': '#0a381e', 'color': '#696868', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#2E8B57', 'color': 'white', 'weight': 1, 'fillOpacity': 1.0}
         else:
-            return {'fillColor': 'black', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#555555', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
 
-    # Adiciona os polígonos dos estados com o estilo definido
     folium.GeoJson(
         data=json.loads(GEOJSON_DATA),
         style_function=style_function,
@@ -178,66 +149,74 @@ def create_styled_timeline(timeline_data, months):
         
         return f'background-color: {color if is_active else "transparent"}; color: {font_color if is_active else "transparent"}; text-align: center; border: 1px solid #444;'
         
-    header_props = [
-        ('background-color', '#121212'),
-        ('color', 'white'),
-        ('font-weight', 'bold')
-    ]
-    
+    header_props = [('background-color', '#121212'), ('color', 'white'), ('font-weight', 'bold')]
     styles = [
-        dict(selector="th", props=header_props),
-        dict(selector="th.row_heading", props=header_props),
-        dict(selector="th.col_heading", props=header_props),
-        dict(selector="td", props=[('border', '1px solid #444')]),
+        dict(selector="th", props=header_props), dict(selector="th.row_heading", props=header_props),
+        dict(selector="th.col_heading", props=header_props), dict(selector="td", props=[('border', '1px solid #444')]),
     ]
 
-    # Remove o fundo branco da tabela
-    st.markdown("""
-    <style>
-        .stDataFrame {
-            background-color: transparent;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
+    st.markdown("""<style>.stDataFrame {background-color: transparent;}</style>""", unsafe_allow_html=True)
     styled_df = df.style.apply(lambda s: s.map(style_active)).set_table_styles(styles)
     return styled_df
+
+def consolidate_timelines(culture_data, months_order):
+    """Consolida os cronogramas de todos os estados de uma cultura em uma visão 'Brasil'."""
+    consolidated = defaultdict(set)
+    all_activities = defaultdict(lambda: {'samas': '', 'months': set()})
+
+    for state_data in culture_data.values():
+        for samas_cat, sub_cats in state_data['timeline'].items():
+            for activity, active_months in sub_cats.items():
+                all_activities[activity]['samas'] = samas_cat
+                all_activities[activity]['months'].update(active_months)
+
+    # Constrói o dicionário no formato final
+    final_timeline = defaultdict(dict)
+    for activity, data in all_activities.items():
+        final_timeline[data['samas']][activity] = sorted(list(data['months']), key=lambda m: months_order.index(m))
+        
+    return final_timeline
 
 
 # --- 5. Interface Principal ---
 st.title("Calendário Agrícola Estratégico")
 
-months_of_interest = ['Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro', 'Janeiro']
+# Ordem cronológica completa para o ano
+ALL_MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
 tab_labels = ["Soja", "Milho Safra", "Algodão"]
 tabs = st.tabs(tab_labels)
 
 for tab, culture_name in zip(tabs, tab_labels):
     with tab:
-        culture_data = management_data[culture_name]
+        culture_states_data = management_data[culture_name]
         
-        # Layout principal com painel de filtros à direita
         main_content, filter_panel = st.columns([2.5, 1])
 
         with filter_panel:
             st.subheader("Filtros e Controles")
             
-            # Filtro multiselect agora está aqui
             selected_states = st.multiselect(
-                'Destaque um ou mais estados no mapa:',
-                options=sorted(culture_data['states']),
-                key=f'multiselect_{culture_name}' # Chave única para cada multiselect
+                'Selecione um ou mais estados para ver o cronograma específico:',
+                options=sorted(culture_states_data.keys()),
+                key=f'multiselect_{culture_name}'
             )
 
         with main_content:
             st.header(f"Análise da Cultura: {culture_name}")
             
             st.subheader("Mapa Interativo dos Estados Produtores")
-            folium_map = create_map(culture_data['states'], selected_states=selected_states)
+            folium_map = create_map(culture_states_data.keys(), selected_states=selected_states)
             st_folium(folium_map, use_container_width=True, height=400)
 
-            st.subheader("Cronograma de Atividades (SAMAS)")
-            styled_timeline = create_styled_timeline(culture_data['timeline'], months_of_interest)
-            st.dataframe(styled_timeline, use_container_width=True)
-            with st.expander("Ver Detalhes e Pontos de Atenção"):
-                st.markdown(culture_data['details'])
+            if not selected_states:
+                st.subheader("Cronograma Consolidado (Brasil)")
+                consolidated_timeline = consolidate_timelines(culture_states_data, ALL_MONTHS)
+                styled_timeline = create_styled_timeline(consolidated_timeline, ALL_MONTHS)
+                st.dataframe(styled_timeline, use_container_width=True)
+            else:
+                for state in selected_states:
+                    st.subheader(f"Cronograma de Atividades: {state}")
+                    state_timeline = culture_states_data[state]['timeline']
+                    styled_timeline = create_styled_timeline(state_timeline, ALL_MONTHS)
+                    st.dataframe(styled_timeline, use_container_width=True)
