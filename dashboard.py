@@ -224,24 +224,30 @@ for tab, culture_name in zip(tabs, tab_labels):
         st.header(f"Análise da Cultura: {culture_name}")
         
         # Layout principal com mapa na esquerda
-        map_col, timeline_col = st.columns([1.2, 2])
+        main_content, filter_panel = st.columns([2.5, 1])
 
-        with map_col:
-            st.subheader("Mapa de Estados Produtores")
+        with main_content:
+            st.subheader("Mapa Interativo dos Estados Produtores")
             
-            # Filtro multiselect
-            selected_states = st.multiselect(
-                'Destaque um ou mais estados no mapa:',
-                options=sorted(culture_data['states']),
-                key=f'multiselect_{culture_name}' # Chave única para cada multiselect
-            )
+            # Filtro multiselect foi movido para o painel da direita
             
-            folium_map = create_map(culture_data['states'], selected_states=selected_states)
-            st_folium(folium_map, use_container_width=True, height=450)
+            # O mapa e a timeline agora ficam na coluna principal
+            
+            folium_map = create_map(culture_data['states'], selected_states=st.session_state.get(f'multiselect_{culture_name}', []))
+            st_folium(folium_map, use_container_width=True, height=400)
 
-        with timeline_col:
             st.subheader("Cronograma de Atividades (SAMAS)")
             styled_timeline = create_styled_timeline(culture_data['timeline'], months_of_interest)
             st.dataframe(styled_timeline, use_container_width=True)
             with st.expander("Ver Detalhes e Pontos de Atenção"):
                 st.markdown(culture_data['details'])
+
+        with filter_panel:
+            st.subheader("Filtros e Controles")
+            
+            # Filtro multiselect agora está aqui
+            st.multiselect(
+                'Destaque um ou mais estados no mapa:',
+                options=sorted(culture_data['states']),
+                key=f'multiselect_{culture_name}' # Chave única para cada multiselect
+            )
