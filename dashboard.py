@@ -74,8 +74,8 @@ def create_choropleth_map(relevant_states):
     """Cria um mapa Folium destacando os estados relevantes."""
     m = folium.Map(location=[-15.788497, -47.879873], zoom_start=4, tiles='CartoDB dark_matter')
     
-    # CORREÇÃO FINAL APLICADA AQUI: O nome correto da coluna é 'nome'
-    gdf_filtered = gdf_states[gdf_states['nome'].isin(relevant_states)]
+    # EVIDÊNCIA APLICADA: O nome correto da coluna é 'name'
+    gdf_filtered = gdf_states[gdf_states['name'].isin(relevant_states)]
     
     folium.GeoJson(
         gdf_filtered,
@@ -85,14 +85,14 @@ def create_choropleth_map(relevant_states):
             'weight': 1,
             'fillOpacity': 0.7,
         },
-        # CORREÇÃO FINAL APLICADA AQUI TAMBÉM
-        tooltip=folium.GeoJsonTooltip(fields=['nome'], aliases=['Estado:'])
+        tooltip=folium.GeoJsonTooltip(fields=['name'], aliases=['Estado:'])
     ).add_to(m)
     return m
 
 def create_timeline_df(timeline_data, months):
     """Cria um DataFrame visual para o cronograma de atividades."""
     df = pd.DataFrame(index=timeline_data.keys(), columns=months)
+    df.index.name = "Atividade / Mês"
     for activity, active_months in timeline_data.items():
         for month in active_months:
             if month in df.columns:
