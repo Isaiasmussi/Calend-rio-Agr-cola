@@ -187,11 +187,11 @@ def create_map(relevant_states, selected_states=None):
     def style_function(feature):
         state_name = feature['properties']['name']
         if selected_states and state_name in selected_states:
-            return {'fillColor': '#FFFF00', 'color': 'black', 'weight': 2.5, 'fillOpacity': 1.0}
+            return {'fillColor': '#2E8B57', 'color': 'black', 'weight': 2.5, 'fillOpacity': 1.0}
         elif state_name in relevant_states:
-            return {'fillColor': '#2E8B57', 'color': 'white', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#08301a', 'color': '#807e7e', 'weight': 1, 'fillOpacity': 1.0}
         else:
-            return {'fillColor': '#555555', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#333333', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
 
     folium.GeoJson(
         data=json.loads(GEOJSON_DATA),
