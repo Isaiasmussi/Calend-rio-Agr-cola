@@ -13,7 +13,6 @@ st.set_page_config(
 )
 
 # --- 2. DADOS COMPLETOS DO MAPA (EMBUTIDOS DIRETAMENTE NO CÓDIGO) ---
-# Esta variável contém o mapa completo do Brasil, com as geometrias.
 GEOJSON_DATA = """
 {
 "type": "FeatureCollection",
@@ -49,10 +48,10 @@ GEOJSON_DATA = """
 }
 """
 
-
 # --- 3. Carregamento e Processamento dos Dados ---
 # Carrega o GeoDataFrame a partir do nosso objeto JSON interno
 gdf_states = gpd.GeoDataFrame.from_features(json.loads(GEOJSON_DATA)["features"])
+# Define o sistema de coordenadas, essencial para o geopandas funcionar corretamente
 gdf_states.crs = "EPSG:4326"
 
 management_data = {
@@ -135,8 +134,8 @@ def create_timeline_df(timeline_data, months):
     df.index.name = "Atividade / Mês"
     for activity, active_months in timeline_data.items():
         for month in active_months:
-            if month in df.columns:
-                df.loc(activity, month) = '✅'
+            # CORREÇÃO DO ERRO DE SINTAXE: df.loc[...] com colchetes
+            df.loc[activity, month] = '✅'
     return df.fillna('')
 
 
@@ -155,6 +154,7 @@ for tab, culture_name in zip([tab_soja, tab_milho, tab_algodao], ['Soja', 'Milho
 
         with map_col:
             st.subheader("Principais Estados Produtores")
+            # Usando a nova função create_map
             folium_map = create_map(culture_data['states'])
             st_folium(folium_map, use_container_width=True, height=400)
 
