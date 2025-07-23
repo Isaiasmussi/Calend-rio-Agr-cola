@@ -14,57 +14,52 @@ st.set_page_config(
 # --- 2. Extração e Estrutura dos Dados do Documento ---
 # Dados extraídos e estruturados a partir do arquivo ANÁLISE DAS PRINCIPAIS CULTURAS DE VERÃO.docx
 # [cite_start]O período de análise considerado é de Agosto/25 a Janeiro/26 [cite: 6]
+# Dados extraídos e estruturados a partir do arquivo ANÁLISE DAS PRINCIPAIS CULTURAS DE VERÃO.docx
+# O período de análise considerado é de Agosto/25 a Janeiro/26
 management_data = {
     'Soja': {
         'states': ['Mato Grosso', 'Paraná', 'Rio Grande do Sul', 'Goiás', 'Mato Grosso do Sul'],
         'timeline': {
-            # [cite_start]Assuntos recorrentes de Agosto a Outubro/25 [cite: 9]
             'Preparo do solo e Adubação': ['Agosto', 'Setembro', 'Outubro'],
             'Aquisição e Tratamento de Sementes': ['Agosto', 'Setembro', 'Outubro'],
             'Herbicidas (Dessecantes e Pré-plantio)': ['Agosto', 'Setembro', 'Outubro'],
-            # [cite_start]Controle de ervas em pós emergência de Outubro a Dezembro [cite: 10]
             'Controle de Ervas Daninhas (Pós-emergência)': ['Outubro', 'Novembro', 'Dezembro'],
-            # [cite_start]Controle de pragas na fase inicial [cite: 11]
             'Controle de Pragas Iniciais': ['Outubro', 'Novembro', 'Dezembro'],
-            # [cite_start]Controle de doenças no final do ciclo [cite: 13]
             'Controle de Doenças': ['Dezembro', 'Janeiro']
         },
         'details': """
-        - [cite_start]**Pragas em Foco:** Lagarta da Soja, Lagarta do Cartucho, Elasmo e Falsa Medideira[cite: 12]. [cite_start]Atenção também para a Mosca Branca[cite: 11].
-        - [cite_start]**Doenças Principais:** Mofo Branco, Antracnose e Ferrugem Asiática, que exigem monitoramento constante pois os danos são severos[cite: 13].
+        - **Pragas em Foco:** Lagarta da Soja, Lagarta do Cartucho, Elasmo e Falsa Medideira. Atenção também para a Mosca Branca.
+        - **Doenças Principais:** Mofo Branco, Antracnose e Ferrugem Asiática, que exigem monitoramento constante pois os danos são severos.
         """
     },
     'Milho Safra': {
         'states': ['Mato Grosso', 'Paraná', 'Goiás', 'Mato Grosso do Sul', 'Minas Gerais'],
         'timeline': {
-            [cite_start]'Aquisição de Financiamento/Custeio': ['Agosto', 'Setembro'], # [cite: 15]
-            [cite_start]'Preparo de Solo e Herbicidas': ['Setembro', 'Outubro', 'Novembro'], # [cite: 16]
-            [cite_start]'Plantio (Sementes e Adubos)': ['Outubro', 'Novembro'], # [cite: 16]
-            [cite_start]'Adubação de Cobertura (Nitrogenada)': ['Novembro', 'Dezembro', 'Janeiro'], # [cite: 17]
-            [cite_start]'Controle de Pragas': ['Outubro', 'Novembro', 'Dezembro', 'Janeiro'] # [cite: 18]
+            'Aquisição de Financiamento/Custeio': ['Agosto', 'Setembro'],
+            'Preparo de Solo e Herbicidas': ['Setembro', 'Outubro', 'Novembro'],
+            'Plantio (Sementes e Adubos)': ['Outubro', 'Novembro'],
+            'Adubação de Cobertura (Nitrogenada)': ['Novembro', 'Dezembro', 'Janeiro'],
+            'Controle de Pragas': ['Outubro', 'Novembro', 'Dezembro', 'Janeiro']
         },
         'details': """
-        - [cite_start]**Pragas em Foco:** Corós, lagarta rosca, lagarta elasmo, larva alfinete (iniciais). Na fase de desenvolvimento, atenção especial à **Cigarrinha**, além da lagarta do cartucho e percevejo barriga verde[cite: 18].
-        - [cite_start]**Doenças:** Ocorrência geralmente mais tardia, com exceção de nematóides[cite: 19].
-        - [cite_start]**Particularidade:** A adubação nitrogenada em cobertura é uma etapa chave que se estende por um período mais longo[cite: 17].
+        - **Pragas em Foco:** Corós, lagarta rosca, lagarta elasmo, larva alfinete (iniciais). Na fase de desenvolvimento, atenção especial à **Cigarrinha**, além da lagarta do cartucho e percevejo barriga verde.
+        - **Doenças:** Ocorrência geralmente mais tardia, com exceção de nematóides.
+        - **Particularidade:** A adubação nitrogenada em cobertura é uma etapa chave que se estende por um período mais longo.
         """
     },
     'Algodão': {
         'states': ['Mato Grosso', 'Bahia', 'Goiás', 'Mato Grosso do Sul'],
         'timeline': {
-            # [cite_start]Dinâmica semelhante ao milho [cite: 25]
             'Financiamento e Preparo do Solo': ['Outubro', 'Novembro', 'Dezembro'],
             'Plantio e Adubação de Plantio': ['Dezembro', 'Janeiro'],
             'Adubação de Cobertura': ['Janeiro'],
-            # [cite_start]Grande preocupação desde o plantio [cite: 26]
             'Controle de Pragas': ['Dezembro', 'Janeiro'],
-            # [cite_start]Preocupação maior a partir de Janeiro [cite: 27]
             'Controle de Doenças': ['Janeiro']
         },
         'details': """
-        - [cite_start]**Pragas em Foco (Atenção Máxima):** A cultura exige controle intenso desde o início, com foco em Bicudo, ácaros, pulgões, curuquerê, lagarta rosada, lagarta das maçãs, Helicoverpa e percevejos[cite: 26].
-        - [cite_start]**Estratégia de Plantio:** É comum em regiões do MT e BA o plantio do algodão em sucessão a uma soja super precoce[cite: 22, 23].
-        - [cite_start]**Comportamento:** O ciclo é semelhante ao milho, porém mais tardio[cite: 21].
+        - **Pragas em Foco (Atenção Máxima):** A cultura exige controle intenso desde o início, com foco em Bicudo, ácaros, pulgões, curuquerê, lagarta rosada, lagarta das maçãs, Helicoverpa e percevejos.
+        - **Estratégia de Plantio:** É comum em regiões do MT e BA o plantio do algodão em sucessão a uma soja super precoce.
+        - **Comportamento:** O ciclo é semelhante ao milho, porém mais tardio.
         """
     }
 }
