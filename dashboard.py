@@ -191,7 +191,7 @@ def create_map(relevant_states, selected_states=None):
         elif state_name in relevant_states:
             return {'fillColor': '#08301a', 'color': '#807e7e', 'weight': 1, 'fillOpacity': 1.0}
         else:
-            return {'fillColor': '#333333', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
+            return {'fillColor': '#black', 'color': '#333333', 'weight': 1, 'fillOpacity': 1.0}
 
     folium.GeoJson(
         data=json.loads(GEOJSON_DATA),
