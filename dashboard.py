@@ -126,17 +126,12 @@ management_data = {
 def create_map(relevant_states, selected_states=None):
     """Cria um mapa Folium destacando os estados relevantes e uma lista de estados selecionados."""
     
-    # Se estados foram selecionados, foca no primeiro da lista. Senão, foca no Brasil.
-    if selected_states:
-        state_geom = gdf_states[gdf_states['name'] == selected_states[0]].geometry.iloc[0]
-        location = [state_geom.centroid.y, state_geom.centroid.x]
-        zoom_start = 6
-    else:
-        location = [-15.788497, -47.879873]
-        zoom_start = 4
+    # O mapa sempre terá a mesma visão geral do Brasil
+    location = [-15.788497, -47.879873]
+    zoom_start = 4
 
-    # Cria o mapa com um tile layer sutil e remove a marca d'água
-    m = folium.Map(location=location, zoom_start=zoom_start, tiles="CartoDB positron", attributionControl=False)
+    # Cria o mapa com o tile layer escuro e remove a marca d'água
+    m = folium.Map(location=location, zoom_start=zoom_start, tiles="CartoDB dark_matter", attributionControl=False)
 
     def style_function(feature):
         state_name = feature['properties']['name']
@@ -221,19 +216,24 @@ for tab, culture_name in zip(tabs, tab_labels):
     with tab:
         culture_data = management_data[culture_name]
         
-        st.header(f"Análise da Cultura: {culture_name}")
-        
-        # Layout principal com mapa na esquerda
+        # Layout principal com painel de filtros à direita
         main_content, filter_panel = st.columns([2.5, 1])
 
+        with filter_panel:
+            st.subheader("Filtros e Controles")
+            
+            # Filtro multiselect agora está aqui
+            selected_states = st.multiselect(
+                'Destaque um ou mais estados no mapa:',
+                options=sorted(culture_data['states']),
+                key=f'multiselect_{culture_name}' # Chave única para cada multiselect
+            )
+
         with main_content:
+            st.header(f"Análise da Cultura: {culture_name}")
+            
             st.subheader("Mapa Interativo dos Estados Produtores")
-            
-            # Filtro multiselect foi movido para o painel da direita
-            
-            # O mapa e a timeline agora ficam na coluna principal
-            
-            folium_map = create_map(culture_data['states'], selected_states=st.session_state.get(f'multiselect_{culture_name}', []))
+            folium_map = create_map(culture_data['states'], selected_states=selected_states)
             st_folium(folium_map, use_container_width=True, height=400)
 
             st.subheader("Cronograma de Atividades (SAMAS)")
@@ -241,13 +241,3 @@ for tab, culture_name in zip(tabs, tab_labels):
             st.dataframe(styled_timeline, use_container_width=True)
             with st.expander("Ver Detalhes e Pontos de Atenção"):
                 st.markdown(culture_data['details'])
-
-        with filter_panel:
-            st.subheader("Filtros e Controles")
-            
-            # Filtro multiselect agora está aqui
-            st.multiselect(
-                'Destaque um ou mais estados no mapa:',
-                options=sorted(culture_data['states']),
-                key=f'multiselect_{culture_name}' # Chave única para cada multiselect
-            )
