@@ -12,6 +12,7 @@ st.set_page_config(
 )
 
 # --- 2. DADOS COMPLETOS DO MAPA (EMBUTIDOS DIRETAMENTE NO CÓDIGO) ---
+# Esta variável contém o mapa completo do Brasil. É grande, mas é a garantia de que vai funcionar.
 GEOJSON_DATA = """
 {
 "type": "FeatureCollection",
@@ -123,29 +124,35 @@ management_data = {
 
 
 # --- 4. Funções de Geração do Dashboard ---
-def create_map(relevant_states, selected_state=None):
-    """Cria um mapa Folium destacando os estados relevantes e um estado selecionado."""
+def create_map(relevant_states, selected_states=None):
+    """Cria um mapa Folium destacando os estados relevantes e uma lista de estados selecionados."""
     
-    if selected_state:
-        state_geom = gdf_states[gdf_states['name'] == selected_state].geometry.iloc[0]
+    # Se estados foram selecionados, foca no primeiro da lista. Senão, foca no Brasil.
+    if selected_states:
+        state_geom = gdf_states[gdf_states['name'] == selected_states[0]].geometry.iloc[0]
         location = [state_geom.centroid.y, state_geom.centroid.x]
         zoom_start = 6
     else:
         location = [-15.788497, -47.879873]
         zoom_start = 4
 
+    # Cria o mapa sem o tile layer padrão e sem a marca d'água
     m = folium.Map(location=location, zoom_start=zoom_start, tiles=None, attributionControl=False)
-    folium.TileLayer('CartoDB dark_matter', name="Dark Mode").add_to(m)
 
     def style_function(feature):
         state_name = feature['properties']['name']
-        if selected_state and state_name == selected_state:
-            return {'fillColor': '#FFFF00', 'color': '#FFFFFF', 'weight': 2.5, 'fillOpacity': 0.9}
+        # Lógica de estilo:
+        # 1. Se o estado está na lista de selecionados, pinta de amarelo.
+        # 2. Senão, se é um estado relevante para a cultura, pinta de verde.
+        # 3. Senão, pinta de cinza escuro.
+        if selected_states and state_name in selected_states:
+            return {'fillColor': '#FFFF00', 'color': 'black', 'weight': 2, 'fillOpacity': 1.0}
         elif state_name in relevant_states:
-            return {'fillColor': '#2E8B57', 'color': '#FFFFFF', 'weight': 1, 'fillOpacity': 0.7}
+            return {'fillColor': '#2E8B57', 'color': 'white', 'weight': 1, 'fillOpacity': 1.0}
         else:
-            return {'fillColor': '#333333', 'color': '#666666', 'weight': 1, 'fillOpacity': 0.3}
+            return {'fillColor': '#333333', 'color': '#666666', 'weight': 1, 'fillOpacity': 1.0}
 
+    # Adiciona os polígonos dos estados com o estilo definido
     folium.GeoJson(
         data=json.loads(GEOJSON_DATA),
         style_function=style_function,
@@ -206,27 +213,26 @@ for tab, culture_name in zip(tabs, tab_labels):
         culture_data = management_data[culture_name]
         
         st.header(f"Análise da Cultura: {culture_name}")
+        
+        # Layout principal com mapa na esquerda
+        map_col, timeline_col = st.columns([1.2, 2])
 
-        all_states = ['Visão Geral'] + sorted(culture_data['states'])
-        selected_state = st.selectbox(
-            'Destaque um estado no mapa:',
-            options=all_states,
-            key=f'select_{culture_name}'
-        )
-        
-        state_to_highlight = selected_state if selected_state != 'Visão Geral' else None
-        
-        # Layout principal
-        st.subheader("Planejamento de Atividades")
-        
-        timeline_col, map_col = st.columns([2, 1.2])
+        with map_col:
+            st.subheader("Mapa de Estados Produtores")
+            
+            # Filtro multiselect
+            selected_states = st.multiselect(
+                'Destaque um ou mais estados no mapa:',
+                options=sorted(culture_data['states']),
+                key=f'multiselect_{culture_name}' # Chave única para cada multiselect
+            )
+            
+            folium_map = create_map(culture_data['states'], selected_states=selected_states)
+            st_folium(folium_map, use_container_width=True, height=450)
 
         with timeline_col:
+            st.subheader("Cronograma de Atividades (SAMAS)")
             styled_timeline = create_styled_timeline(culture_data['timeline'], months_of_interest)
             st.dataframe(styled_timeline, use_container_width=True)
             with st.expander("Ver Detalhes e Pontos de Atenção"):
                 st.markdown(culture_data['details'])
-
-        with map_col:
-            folium_map = create_map(culture_data['states'], selected_state=state_to_highlight)
-            st_folium(folium_map, use_container_width=True, height=450)
