@@ -74,7 +74,7 @@ def create_choropleth_map(relevant_states):
     """Cria um mapa Folium destacando os estados relevantes."""
     m = folium.Map(location=[-15.788497, -47.879873], zoom_start=4, tiles='CartoDB dark_matter')
     
-    # CORREÇÃO APLICADA AQUI: Trocado 'NOME' por 'name'
+    # Usando o nome de coluna corrigido 'name'
     gdf_filtered = gdf_states[gdf_states['name'].isin(relevant_states)]
     
     folium.GeoJson(
@@ -85,6 +85,7 @@ def create_choropleth_map(relevant_states):
             'weight': 1,
             'fillOpacity': 0.7,
         },
+        # Usando o nome de coluna corrigido 'name' também no tooltip
         tooltip=folium.GeoJsonTooltip(fields=['name'], aliases=['Estado:'])
     ).add_to(m)
     return m
